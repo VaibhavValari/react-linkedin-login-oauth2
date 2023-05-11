@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
+import storage from './storage';
 import { LINKEDIN_OAUTH2_STATE, parse } from './utils';
-
-import { Storage } from '@ionic/storage';
 
 type ParamsType = {
   state: string;
@@ -13,11 +12,9 @@ type ParamsType = {
 export function LinkedInCallback() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   useEffect(() => {
-    const storage = new Storage();
-
     const checkAndPerform = async () => {
       const params = parse(window.location.search) as ParamsType;
-      const state = await storage.get(LINKEDIN_OAUTH2_STATE);
+      const state = await storage?.get(LINKEDIN_OAUTH2_STATE);
 
       if (params.state !== state) {
         setErrorMessage('State does not match');
