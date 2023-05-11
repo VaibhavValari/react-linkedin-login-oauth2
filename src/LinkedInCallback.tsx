@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import storage from './storage';
-import { LINKEDIN_OAUTH2_STATE, parse } from './utils';
+
+import { parse } from './utils';
 
 type ParamsType = {
   state: string;
@@ -14,13 +14,13 @@ export function LinkedInCallback() {
   useEffect(() => {
     const checkAndPerform = async () => {
       const params = parse(window.location.search) as ParamsType;
-      const state = await storage?.get(LINKEDIN_OAUTH2_STATE);
 
-      if (params.state !== state) {
-        setErrorMessage('State does not match');
-      } else if (params.error) {
+      if (params.error) {
         const errorMessage =
           params.error_description || 'Login failed. Please try again.';
+
+        setErrorMessage(errorMessage);
+
         window.opener &&
           window.opener.postMessage(
             {

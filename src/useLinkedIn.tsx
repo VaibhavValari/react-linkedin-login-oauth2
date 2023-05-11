@@ -35,24 +35,24 @@ export function useLinkedIn({
 
   const receiveMessage = useCallback(
     async (event: MessageEvent) => {
-      const savedState = await storage?.get(LINKEDIN_OAUTH2_STATE);
+      // const savedState = await storage?.get(LINKEDIN_OAUTH2_STATE);
 
       if (event.origin === window.location.origin) {
         if (event.data.errorMessage && event.data.from === 'Linked In') {
-          // Prevent CSRF attack by testing state
-          if (event.data.state !== savedState) {
-            popupRef.current && popupRef.current.close();
-            return;
-          }
+          // // Prevent CSRF attack by testing state
+          // if (event.data.state !== savedState) {
+          //   popupRef.current && popupRef.current.close();
+          //   return;
+          // }
           onError && onError(event.data);
           popupRef.current && popupRef.current.close();
         } else if (event.data.code && event.data.from === 'Linked In') {
           // Prevent CSRF attack by testing state
-          if (event.data.state !== savedState) {
-            console.error('State does not match');
-            popupRef.current && popupRef.current.close();
-            return;
-          }
+          // if (event.data.state !== savedState) {
+          //   console.error('State does not match');
+          //   popupRef.current && popupRef.current.close();
+          //   return;
+          // }
           onSuccess && onSuccess(event.data.code);
           popupRef.current && popupRef.current.close();
         }
