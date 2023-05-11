@@ -75,5 +75,8 @@
     "oauth",
     "oauth2",
     "redirect"
-  ]
+  ],
+  "dependencies": {
+    "@ionic/storage": "^3.0.6"
+  }
 }

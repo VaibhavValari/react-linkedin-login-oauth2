@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useLinkedInType } from './types';
 import { LINKEDIN_OAUTH2_STATE } from './utils';
+import { Storage } from '@ionic/storage';
 
 const getPopupPositionProperties = ({ width = 600, height = 600 }) => {
   const left = screen.width / 2 - width / 2;
@@ -30,10 +31,12 @@ export function useLinkedIn({
 }: useLinkedInType) {
   const popupRef = useRef<Window>(null);
   const popUpIntervalRef = useRef<number>(null);
+  const storage = new Storage();
 
   const receiveMessage = useCallback(
-    (event: MessageEvent) => {
-      const savedState = localStorage.getItem(LINKEDIN_OAUTH2_STATE);
+    async (event: MessageEvent) => {
+      const savedState = await storage.get(LINKEDIN_OAUTH2_STATE);
+
       if (event.origin === window.location.origin) {
         if (event.data.errorMessage && event.data.from === 'Linked In') {
           // Prevent CSRF attack by testing state
@@ -80,18 +83,20 @@ export function useLinkedIn({
     };
   }, [receiveMessage]);
 
-  const getUrl = () => {
+  const getUrl = async () => {
     const scopeParam = `&scope=${encodeURI(scope)}`;
     const generatedState = state || generateRandomString();
-    localStorage.setItem(LINKEDIN_OAUTH2_STATE, generatedState);
+    await storage.set(LINKEDIN_OAUTH2_STATE, generatedState);
     const linkedInAuthLink = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}${scopeParam}&state=${generatedState}`;
     return linkedInAuthLink;
   };
 
-  const linkedInLogin = () => {
+  const linkedInLogin = async () => {
+    const url = await getUrl();
+
     popupRef.current?.close();
     popupRef.current = window.open(
-      getUrl(),
+      url,
       '_blank',
       getPopupPositionProperties({ width: 600, height: 600 }),
     );
